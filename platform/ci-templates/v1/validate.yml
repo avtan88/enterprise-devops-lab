@@ -1,0 +1,9 @@
+name: validate
+
+description: Validate minimum service contract before CI execution.
+
+checks:
+  - Dockerfile exists
+  - requirements.txt exists
+  - tests directory exists
+  - app directory exists

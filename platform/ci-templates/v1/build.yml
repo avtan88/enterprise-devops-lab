@@ -1,0 +1,7 @@
+name: build
+
+description: Build service container image using approved Dockerfile pattern.
+
+steps:
+  - docker build service image
+  - tag image with service version

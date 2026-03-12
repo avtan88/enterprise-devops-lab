@@ -1,0 +1,7 @@
+name: scan
+
+description: Run container security scanning before publication.
+
+steps:
+  - run image vulnerability scan
+  - fail on disallowed severity threshold

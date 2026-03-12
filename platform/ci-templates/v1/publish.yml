@@ -1,0 +1,8 @@
+name: publish
+
+description: Publish validated container image to approved registry.
+
+steps:
+  - authenticate to registry
+  - push image to approved registry
+  - record published image tag
