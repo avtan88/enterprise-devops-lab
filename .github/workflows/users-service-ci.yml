@@ -15,9 +15,9 @@ on:
 permissions:
   contents: read
   packages: read
+  security-events: write
 
 jobs:
-
   validate:
     runs-on: ubuntu-latest
 
@@ -32,7 +32,6 @@ jobs:
           test -f services/users-service/ci/pipeline.yml
           test -d services/users-service/app
           test -d services/users-service/tests
-
 
   test:
     runs-on: ubuntu-latest
@@ -58,8 +57,7 @@ jobs:
         run: |
           python -m pytest
 
-
-  build:
+  build-and-scan:
     runs-on: ubuntu-latest
     needs: test
 
@@ -67,7 +65,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Login to GHCR
+      - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -78,3 +76,13 @@ jobs:
         working-directory: services/users-service
         run: |
           docker build -t users-service:ci .
+
+      - name: Run Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: "users-service:ci"
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
+          vuln-type: "os,library"
+          severity: "HIGH,CRITICAL"
