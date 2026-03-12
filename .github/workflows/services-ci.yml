@@ -14,6 +14,11 @@ on:
       - ".github/workflows/reusable-service-ci.yml"
       - "platform/ci-templates/v1/**"
 
+permissions:
+  contents: read
+  packages: write
+  security-events: write
+
 jobs:
   users-service:
     uses: ./.github/workflows/reusable-service-ci.yml
