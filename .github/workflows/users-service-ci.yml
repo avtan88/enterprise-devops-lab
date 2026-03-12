@@ -16,7 +16,6 @@ permissions:
   security-events: write
 
 jobs:
-
   validate:
     runs-on: ubuntu-latest
     steps:
@@ -29,7 +28,6 @@ jobs:
           test -f services/users-service/ci/pipeline.yml
           test -d services/users-service/app
           test -d services/users-service/tests
-
 
   test:
     runs-on: ubuntu-latest
@@ -52,23 +50,14 @@ jobs:
         run: |
           python -m pytest
 
-
-  build-and-scan:
+  build-scan-publish:
     runs-on: ubuntu-latest
     needs: test
-
-    outputs:
-      image_tag: ${{ steps.meta.outputs.tag }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Generate image tag
-        id: meta
-        run: |
-          echo "tag=ghcr.io/avtan88/enterprise/users-service:${GITHUB_SHA}" >> $GITHUB_OUTPUT
-
-      - name: Login to GHCR
+      - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -78,29 +67,17 @@ jobs:
       - name: Build container image
         working-directory: services/users-service
         run: |
-          docker build -t ${{ steps.meta.outputs.tag }} .
+          docker build -t ghcr.io/avtan88/enterprise/users-service:${GITHUB_SHA} .
 
       - name: Run Trivy vulnerability scan
         uses: aquasecurity/trivy-action@0.24.0
         with:
-          image-ref: ${{ steps.meta.outputs.tag }}
+          image-ref: ghcr.io/avtan88/enterprise/users-service:${{ github.sha }}
           format: table
           exit-code: "1"
           ignore-unfixed: true
+          vuln-type: os,library
           severity: HIGH,CRITICAL
-
-
-  publish:
-    runs-on: ubuntu-latest
-    needs: build-and-scan
-
-    steps:
-      - name: Login to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push image
         run: |
