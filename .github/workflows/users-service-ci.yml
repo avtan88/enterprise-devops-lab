@@ -12,9 +12,15 @@ on:
       - ".github/workflows/users-service-ci.yml"
       - "platform/ci-templates/v1/**"
 
+permissions:
+  contents: read
+  packages: read
+
 jobs:
+
   validate:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,12 +29,15 @@ jobs:
         run: |
           test -f services/users-service/Dockerfile
           test -f services/users-service/requirements.txt
+          test -f services/users-service/ci/pipeline.yml
           test -d services/users-service/app
           test -d services/users-service/tests
+
 
   test:
     runs-on: ubuntu-latest
     needs: validate
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -49,12 +58,21 @@ jobs:
         run: |
           python -m pytest
 
+
   build:
     runs-on: ubuntu-latest
     needs: test
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build container image
         working-directory: services/users-service
