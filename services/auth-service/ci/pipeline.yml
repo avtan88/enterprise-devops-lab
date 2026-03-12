@@ -1,0 +1,4 @@
+service_name: auth-service
+service_path: services/auth-service
+template_version: v1
+image_name: enterprise/auth-service

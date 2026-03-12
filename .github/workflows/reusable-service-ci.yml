@@ -1,14 +1,17 @@
-name: users-service-ci
+name: reusable-service-ci
 
 on:
-  push:
-    paths:
-      - "services/users-service/**"
-      - ".github/workflows/users-service-ci.yml"
-      - "platform/ci-templates/v1/**"
-  pull_request:
-    paths:
-      - "services/users-service/**"
+  workflow_call:
+    inputs:
+      service_name:
+        required: true
+        type: string
+      service_path:
+        required: true
+        type: string
+      image_name:
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -23,11 +26,11 @@ jobs:
 
       - name: Validate service contract
         run: |
-          test -f services/users-service/Dockerfile
-          test -f services/users-service/requirements.txt
-          test -f services/users-service/ci/pipeline.yml
-          test -d services/users-service/app
-          test -d services/users-service/tests
+          test -f ${{ inputs.service_path }}/Dockerfile
+          test -f ${{ inputs.service_path }}/requirements.txt
+          test -f ${{ inputs.service_path }}/ci/pipeline.yml
+          test -d ${{ inputs.service_path }}/app
+          test -d ${{ inputs.service_path }}/tests
 
   test:
     runs-on: ubuntu-latest
@@ -40,20 +43,19 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        working-directory: services/users-service
+        working-directory: ${{ inputs.service_path }}
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
       - name: Run tests
-        working-directory: services/users-service
+        working-directory: ${{ inputs.service_path }}
         run: |
           python -m pytest
 
   build-scan-publish:
     runs-on: ubuntu-latest
     needs: test
-
     steps:
       - uses: actions/checkout@v4
 
@@ -65,14 +67,14 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build container image
-        working-directory: services/users-service
+        working-directory: ${{ inputs.service_path }}
         run: |
-          docker build -t ghcr.io/avtan88/enterprise/users-service:${GITHUB_SHA} .
+          docker build -t ghcr.io/avtan88/${{ inputs.image_name }}:${GITHUB_SHA} .
 
       - name: Run Trivy vulnerability scan
         uses: aquasecurity/trivy-action@0.24.0
         with:
-          image-ref: ghcr.io/avtan88/enterprise/users-service:${{ github.sha }}
+          image-ref: ghcr.io/avtan88/${{ inputs.image_name }}:${{ github.sha }}
           format: table
           exit-code: "1"
           ignore-unfixed: true
@@ -81,4 +83,4 @@ jobs:
 
       - name: Push image
         run: |
-          docker push ghcr.io/avtan88/enterprise/users-service:${GITHUB_SHA}
+          docker push ghcr.io/avtan88/${{ inputs.image_name }}:${GITHUB_SHA}
