@@ -1,0 +1,32 @@
+name: base-image-publish
+
+on:
+  push:
+    paths:
+      - "platform/base-images/python-runtime/**"
+      - ".github/workflows/base-image-publish.yml"
+  workflow_dispatch:
+
+jobs:
+  publish-base-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push base image
+        working-directory: platform/base-images/python-runtime
+        run: |
+          docker build -t ghcr.io/avtan88/enterprise/python-runtime:1.0.1 .
+          docker push ghcr.io/avtan88/enterprise/python-runtime:1.0.1

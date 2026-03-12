@@ -1,4 +1,4 @@
-FROM enterprise/python-runtime:1.0.1
+FROM ghcr.io/avtan88/enterprise/python-runtime:1.0.1
 
 WORKDIR /app
 
