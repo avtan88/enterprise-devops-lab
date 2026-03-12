@@ -1,0 +1,11 @@
+name: enterprise-python-runtime
+version: 1.0.0
+maintainer: platform-team
+language: python
+runtime: python3
+base_os: amazonlinux:2023
+usage: runtime
+support_level: approved
+deprecation_policy: n_minus_1
+scan_required: true
+registry: ecr
