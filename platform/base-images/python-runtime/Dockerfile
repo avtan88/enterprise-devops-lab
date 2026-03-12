@@ -5,7 +5,7 @@ LABEL maintainer="platform-team" \
       org.opencontainers.image.description="Approved Python runtime base image for enterprise services" \
       org.opencontainers.image.version="1.0.0"
 
-RUN dnf install -y python3 shadow-utils ca-certificates && \
+RUN dnf install -y python3 python3-pip shadow-utils ca-certificates && \
     dnf clean all && \
     rm -rf /var/cache/dnf
 
