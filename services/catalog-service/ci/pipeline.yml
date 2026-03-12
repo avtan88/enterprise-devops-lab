@@ -1,0 +1,4 @@
+service_name: catalog-service
+service_path: services/catalog-service
+template_version: v1
+image_name: enterprise/catalog-service

@@ -2,10 +2,3 @@ service_name: users-service
 service_path: services/users-service
 template_version: v1
 image_name: enterprise/users-service
-
-stages:
-  - validate
-  - test
-  - build
-  - scan
-  - publish

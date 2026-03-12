@@ -1,0 +1,4 @@
+service_name: payments-service
+service_path: services/payments-service
+template_version: v1
+image_name: enterprise/payments-service

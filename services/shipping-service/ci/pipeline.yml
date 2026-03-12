@@ -1,0 +1,4 @@
+service_name: shipping-service
+service_path: services/shipping-service
+template_version: v1
+image_name: enterprise/shipping-service

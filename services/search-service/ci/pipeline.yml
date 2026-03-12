@@ -1,0 +1,4 @@
+service_name: search-service
+service_path: services/search-service
+template_version: v1
+image_name: enterprise/search-service
