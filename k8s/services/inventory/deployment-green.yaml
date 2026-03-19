@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-green
+  namespace: enterprise-devops
+  labels:
+    app: inventory
+    version: green
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: inventory
+      version: green
+  template:
+    metadata:
+      labels:
+        app: inventory
+        version: green
+    spec:
+      containers:
+        - name: inventory
+          image: ghcr.io/avtan88/enterprise/inventory-service:9d84e73e183e04c962097c556e8f85b49f2bb60f
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"

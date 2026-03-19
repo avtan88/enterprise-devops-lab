@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-blue
+  namespace: enterprise-devops
+  labels:
+    app: orders
+    version: blue
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: orders
+      version: blue
+  template:
+    metadata:
+      labels:
+        app: orders
+        version: blue
+    spec:
+      containers:
+        - name: orders
+          image: ghcr.io/avtan88/enterprise/orders-service:31d6638041543f4b7c4a7fa3c8bbc2794eb7693f
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"

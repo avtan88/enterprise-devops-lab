@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: search-green
+  namespace: enterprise-devops
+  labels:
+    app: search
+    version: green
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: search
+      version: green
+  template:
+    metadata:
+      labels:
+        app: search
+        version: green
+    spec:
+      containers:
+        - name: search
+          image: ghcr.io/avtan88/enterprise/search-service:66d79d42987b1e773c8ad7c63dbe6087f433d8a0
+          ports:
+            - containerPort: 8080

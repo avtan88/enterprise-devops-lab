@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: billing-blue
+  namespace: enterprise-devops
+  labels:
+    app: billing
+    version: blue
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: billing
+      version: blue
+  template:
+    metadata:
+      labels:
+        app: billing
+        version: blue
+    spec:
+      containers:
+        - name: billing
+          image: ghcr.io/avtan88/enterprise/billing-service:66d79d42987b1e773c8ad7c63dbe6087f433d8a0
+          ports:
+            - containerPort: 8080
